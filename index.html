@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plateforme d'Orientation CNC</title>
+    <title>Plateforme d'Orientation & Simulation CNC</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,7 +13,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
             background: #ffffff;
             padding: 35px;
@@ -29,8 +29,34 @@
         p.subtitle {
             text-align: center;
             color: #718096;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
+        
+        /* BADGE STATISTIQUES ADMIN (MASQUÉ PAR DÉFAUT) */
+        .admin-stats-badge {
+            display: none;
+            background-color: #fefcbf;
+            border: 1px solid #ecc94b;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            color: #744210;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        .admin-stats-grid {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+        .admin-stat-item {
+            font-weight: bold;
+        }
+        .admin-stat-item span {
+            color: #c05621;
+            font-size: 18px;
+        }
+
         .section {
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -57,17 +83,22 @@
             margin-bottom: 8px;
             margin-top: 15px;
         }
-        input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea {
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea, input[type="file"] {
             width: 100%;
             padding: 12px;
             border: 1px solid #cbd5e0;
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 15px;
+            background-color: #ffffff;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
         }
         .checkbox-group {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 12px;
             margin-top: 10px;
         }
@@ -84,19 +115,6 @@
         }
         .checkbox-group input {
             margin-right: 10px;
-        }
-        .file-upload-box {
-            border: 2px dashed #cbd5e0;
-            padding: 15px;
-            text-align: center;
-            background: #ffffff;
-            border-radius: 6px;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-        .file-upload-box:hover {
-            border-color: #3182ce;
-            background-color: #ebf8ff;
         }
         button {
             width: 100%;
@@ -120,65 +138,75 @@
         .btn-secondary:hover {
             background-color: #4a5568;
         }
+
+        /* STYLES DES RÉSULTATS */
         #resultat-box {
             display: none;
             margin-top: 25px;
             padding: 20px;
-            background-color: #f0fff4;
-            border: 1px solid #c6f6d5;
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
         }
         .ecole-card {
             background: white;
-            padding: 15px;
+            padding: 18px;
             margin-top: 12px;
-            border-radius: 6px;
-            border-left: 5px solid #3182ce;
+            border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
         }
-        .badge-forte {
-            background-color: #c6f6d5;
-            color: #22543d;
-            padding: 4px 8px;
-            border-radius: 4px;
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            height: 12px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
             font-weight: bold;
             font-size: 13px;
+            display: inline-block;
         }
-        .badge-moyenne {
-            background-color: #feebc8;
-            color: #744210;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 13px;
-        }
-        /* Style pour masquer/afficher les pages */
-        .page {
-            display: none;
-        }
-        .page-active {
-            display: block;
-        }
+        .badge-tres-forte { background-color: #c6f6d5; color: #22543d; }
+        .badge-forte { background-color: #ebf8ff; color: #2b6cb0; }
+        .badge-moyenne { background-color: #feebc8; color: #744210; }
+        .badge-faible { background-color: #fed7d7; color: #9b2c2c; }
+
+        .page { display: none; }
+        .page-active { display: block; }
     </style>
 </head>
-<body>
+<body onload="chargerCompteursInitiaux()">
 
 <div class="container">
 
-    <!-- ========================================== -->
-    <!-- PAGE 1 : ACCUEIL / CONNEXION               -->
-    <!-- ========================================== -->
+    <!-- ACCUEIL -->
     <div id="page-accueil" class="page page-active">
         <h1> Bienvenue sur le Simulateur CNC</h1>
-        <p class="subtitle">Estimez vos chances d'intégration selon vos classements et vos domaines préférés.</p>
+        <p class="subtitle">Estimez vos probabilités d'intégration basées sur les historiques officiels du CNC.</p>
+
+        <!-- STATISTIQUES RÉSERVÉES À L'ADMIN -->
+        <div id="admin-badge-accueil" class="admin-stats-badge">
+            👑 <b>Tableau de Bord Admin</b>
+            <div class="admin-stats-grid">
+                <div class="admin-stat-item">Visiteurs uniques : <span id="compteur-visiteurs-accueil">...</span></div>
+                <div class="admin-stat-item">Simulations calculées : <span id="compteur-simus-accueil">...</span></div>
+            </div>
+        </div>
 
         <div class="section" style="background-color: #ebf8ff; border-color: #bee3f8;">
-            <h2>Espace Identification</h2>
-            <p style="font-size: 14px; color: #2b6cb0; margin-top: 0;">Connectez-vous pour accéder au simulateur d'affectations :</p>
-            
+            <h2>Identification</h2>
             <label for="nom">Nom complet :</label>
             <input type="text" id="nom" >
-
             <div class="grid-2">
                 <div>
                     <label for="email">Adresse Email :</label>
@@ -190,23 +218,28 @@
                 </div>
             </div>
 
-            <button onclick="entrerDansLeSimulateur()" style="margin-top: 25px;">Accéder au Simulateur d'Affectation ➔</button>
+            <button onclick="entrerDansLeSimulateur()" style="margin-top: 25px;">Accéder au Simulateur ➔</button>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- PAGE 2 : SIMULATION DE L'AFFECTATION       -->
-    <!-- ========================================== -->
+    <!-- SIMULATION -->
     <div id="page-simulation" class="page">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 style="margin: 0; font-size: 22px;" id="message-bienvenue"> Espace Simulation</h1>
+            <h1 style="margin: 0; font-size: 22px;" id="message-bienvenue">Espace Simulation</h1>
             <button onclick="retourAccueil()" style="width: auto; padding: 8px 15px; font-size: 13px;" class="btn-secondary">← Déconnexion</button>
         </div>
 
-        <!-- 1. PROFIL DU CANIDAT -->
+        <!-- STATISTIQUES RÉSERVÉES À L'ADMIN -->
+        <div id="admin-badge-simu" class="admin-stats-badge">
+            👑 <b>Tableau de Bord Admin</b>
+            <div class="admin-stats-grid">
+                <div class="admin-stat-item"> Visiteurs uniques : <span id="compteur-visiteurs-simu">...</span></div>
+                <div class="admin-stat-item">Simulations calculées : <span id="compteur-simus-simu">...</span></div>
+            </div>
+        </div>
+
         <div class="section">
-            <h2>1. Choix du Concours</h2>
-            
+            <h2>1. Informations du Concours</h2>
             <label for="filiere">Filière d'origine :</label>
             <select id="filiere">
                 <option value="TSI">TSI (Technologie et Sciences Industrielles)</option>
@@ -215,67 +248,123 @@
             </select>
 
             <label for="classement">Votre classement CNC :</label>
-            <input type="number" id="classement" placeholder="Ex: 120" min="1">
+            <input type="number" id="classement" placeholder="Ex: 115" min="1">
         </div>
 
-        <!-- 2. CHOIX DES DOMAINES -->
         <div class="section">
-            <h2>2. Domaines d'intérêt (Sélection multiple)</h2>
-            <p style="font-size: 14px; color: #666; margin-top: 0;">Cochez un ou plusieurs domaines souhaités :</p>
+            <h2>2. Domaines souhaités</h2>
             <div class="checkbox-group">
-                <label><input type="checkbox" class="domaine-cb" value="Informatique"> Génie Informatique / Data / IA</label>
-                <label><input type="checkbox" class="domaine-cb" value="Electrique"> Génie Électrique</label>
+                <label><input type="checkbox" class="domaine-cb" value="Informatique" checked> Informatique / Data / IA</label>
+                <label><input type="checkbox" class="domaine-cb" value="Electrique" checked> Génie Électrique</label>
                 <label><input type="checkbox" class="domaine-cb" value="Mecanique"> Génie Mécanique</label>
-                <label><input type="checkbox" class="domaine-cb" value="Industriel"> Génie Industriel</label>
-                <label><input type="checkbox" class="domaine-cb" value="Civil"> Génie Civil</label>
-                <label><input type="checkbox" class="domaine-cb" value="Telecom"> Réseaux & Télécoms</label>
-                <label><input type="checkbox" class="domaine-cb" value="Processus"> Génie des Procédés / Minéral</label>
+                <label><input type="checkbox" class="domaine-cb" value="Industriel"> Génie Industriel & Logistique</label>
+                <label><input type="checkbox" class="domaine-cb" value="Civil"> Génie Civil & BTP</label>
+                <label><input type="checkbox" class="domaine-cb" value="Telecom"> Réseaux, Télécoms & Aéronautique</label>
+                <label><input type="checkbox" class="domaine-cb" value="Processus"> Génie des Procédés & Environnement</label>
             </div>
         </div>
 
-        <!-- BOUTON DE SIMULATION -->
-        <button onclick="calculerChances()">Lancer la simulation des affectations</button>
+        <!-- SECTION OBSERVATION ET UPLOAD -->
+        <div class="section" style="background-color: #f7fafc;">
+            <h2>3. Observations & Contributions</h2>
+            
+            <label for="observations">Remarques ou suggestions pour améliorer le site :</label>
+            <textarea id="observations" placeholder="Partagez vos idées, signalez une erreur de rang ou laissez un commentaire..."></textarea>
 
-        <!-- 3. RÉSULTATS -->
+            <label for="fichiers-upload">Joindre un fichier ou une image (Seuils officiels, relevé de notes, etc.) :</label>
+            <input type="file" id="fichiers-upload" accept="image/*, .pdf, .doc, .docx" multiple>
+            <small style="color: #718096; display: block; margin-top: 5px;">Formats acceptés : PDF, JPG, PNG, DOCX.</small>
+        </div>
+
+        <button onclick="calculerChances()">📊 Calculer mes Probabilités d'Admission</button>
+
+        <!-- RÉSULTATS DYNAMIQUES -->
         <div id="resultat-box">
-            <h2 style="color: #276749; margin-top: 0;">Écoles & Spécialités Eligibles</h2>
+            <h2 style="color: #1a365d; margin-top: 0;">Résultats de la Simulation (Triés par probabilité)</h2>
             <div id="liste-ecoles"></div>
-        </div>
-
-        <!-- 4. CONTRIBUTIONS / FICHIERS -->
-        <div class="section" style="margin-top: 25px;">
-            <h2>4. Contribution & Fichiers (Crowdsourcing)</h2>
-            <p style="font-size: 14px; color: #666; margin-top: 0;">Partagez vos informations ou captures d'écran d'admissions :</p>
-            
-            <textarea rows="3" placeholder="Ex: Voici le tableau des affectations ENSIAS 2025..."></textarea>
-            
-            <label>Ajouter un document / image :</label>
-            <div class="file-upload-box" onclick="document.getElementById('file-input').click();">
-                📁 <span id="file-label">Cliquez ici pour choisir un fichier ou une image</span>
-                <input type="file" id="file-input" style="display: none;" accept="image/*,.pdf,.xlsx,.csv" onchange="afficherNomFichier(this)">
-            </div>
-
-            <button onclick="envoyerContribution()" class="btn-secondary">Envoyer l'observation</button>
         </div>
     </div>
 
 </div>
 
 <script>
-    // NAVIGATION ENTRE LES PAGES
-    function entrerDansLeSimulateur() {
-        const nom = document.getElementById('nom').value.trim();
-        const email = document.getElementById('email').value.trim();
+    // 🔑 TES IDENTIFIANTS ADMINISTRATEUR
+    const ADMIN_NOM = "Mariem El Bahat";
+    const ADMIN_EMAIL = "mariemelbahat99@gmail.com";
 
-        if (nom === "" || email === "") {
-            alert("Veuillez remplir votre nom et votre adresse email pour continuer.");
+    // APIS DE COMPTAGE
+    const API_VISITES_URL = "https://api.counterapi.dev/v1/simulateur-cnc-maroc-mariem/visiteurs";
+    const API_SIMUS_URL = "https://api.counterapi.dev/v1/simulateur-cnc-maroc-mariem/simulations";
+
+    // 1. CHARGEMENT DES COMPTEURS
+    async function chargerCompteursInitiaux() {
+        fetchCompteur(API_VISITES_URL, 'visiteurs');
+        fetchCompteur(API_SIMUS_URL, 'simus');
+    }
+
+    async function fetchCompteur(url, type) {
+        try {
+            const res = await fetch(url);
+            if (res.ok) {
+                const data = await res.json();
+                mettreAJourAffichage(type, data.count);
+            }
+        } catch (e) {
+            let localVal = localStorage.getItem('cnc_' + type) || 12;
+            mettreAJourAffichage(type, localVal);
+        }
+    }
+
+    // 2. INCRÉMENTATIONS
+    async function incrémenterCompteur(url, type) {
+        try {
+            const res = await fetch(url + "/up");
+            if (res.ok) {
+                const data = await res.json();
+                mettreAJourAffichage(type, data.count);
+            }
+        } catch (e) {
+            let localVal = parseInt(localStorage.getItem('cnc_' + type) || "12") + 1;
+            localStorage.setItem('cnc_' + type, localVal);
+            mettreAJourAffichage(type, localVal);
+        }
+    }
+
+    function mettreAJourAffichage(type, valeur) {
+        if (type === 'visiteurs') {
+            document.getElementById('compteur-visiteurs-accueil').innerText = valeur;
+            document.getElementById('compteur-visiteurs-simu').innerText = valeur;
+        } else {
+            document.getElementById('compteur-simus-accueil').innerText = valeur;
+            document.getElementById('compteur-simus-simu').innerText = valeur;
+        }
+    }
+
+    // 3. VÉRIFICATION ADMIN & CONNEXION
+    function entrerDansLeSimulateur() {
+        const nomSaisi = document.getElementById('nom').value.trim();
+        const emailSaisi = document.getElementById('email').value.trim();
+
+        if (nomSaisi === "" || emailSaisi === "") {
+            alert("Veuillez saisir votre nom et adresse e-mail.");
             return;
         }
 
-        // Personnaliser le titre de bienvenue
-        document.getElementById('message-bienvenue').innerText = "🎯Espace Simulation de " + nom;
+        // Enregistre la visite d'un nouvel utilisateur
+        incrémenterCompteur(API_VISITES_URL, 'visiteurs');
 
-        // Basculer la visibilité des pages
+        const estAdmin = (nomSaisi.toLowerCase() === ADMIN_NOM.toLowerCase()) && 
+                         (emailSaisi.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+
+        if (estAdmin) {
+            document.getElementById('admin-badge-accueil').style.display = 'block';
+            document.getElementById('admin-badge-simu').style.display = 'block';
+        } else {
+            document.getElementById('admin-badge-accueil').style.display = 'none';
+            document.getElementById('admin-badge-simu').style.display = 'none';
+        }
+
+        document.getElementById('message-bienvenue').innerText = "🎯 Espace Simulation - " + nomSaisi;
         document.getElementById('page-accueil').classList.remove('page-active');
         document.getElementById('page-simulation').classList.add('page-active');
     }
@@ -285,9 +374,9 @@
         document.getElementById('page-accueil').classList.add('page-active');
     }
 
-    // BASE DE DONNÉES HISTORIQUES
+    // BASE DE DONNÉES HISTORIQUES (EMI, ENSIAS, INPT, EHTP, AIAC)
     const baseDonnees = [
-        // EMI
+        // --- EMI ---
         { ecole: "EMI", genie: "Génie Informatique", domaine: "Informatique", rangs: { MP: 833, PSI: 146, TSI: 111 } },
         { ecole: "EMI", genie: "Génie Industriel", domaine: "Industriel", rangs: { MP: 1014, PSI: 38, TSI: 61 } },
         { ecole: "EMI", genie: "Génie Mécanique", domaine: "Mecanique", rangs: { MP: 1330, PSI: 171, TSI: 122 } },
@@ -296,89 +385,133 @@
         { ecole: "EMI", genie: "Génie Réseaux & Télécoms", domaine: "Telecom", rangs: { MP: 1253, PSI: 206, TSI: 199 } },
         { ecole: "EMI", genie: "Génie des Procédés", domaine: "Processus", rangs: { MP: 1596, PSI: 292, TSI: 251 } },
         
-        // ENSIAS
+        // --- ENSIAS ---
         { ecole: "ENSIAS", genie: "Génie Logiciel (GL)", domaine: "Informatique", rangs: { MP: 981, PSI: 102, TSI: 318 } },
         { ecole: "ENSIAS", genie: "2IA (Intelligence Artificielle)", domaine: "Informatique", rangs: { MP: 809, PSI: 34, TSI: 357 } },
-        { ecole: "ENSIAS", genie: "D2S (Data Science)", domaine: "Informatique", rangs: { MP: 1101, PSI: 163, TSI: 337 } },
+        { ecole: "ENSIAS", genie: "Data Science (D2S)", domaine: "Informatique", rangs: { MP: 1101, PSI: 163, TSI: 337 } },
         { ecole: "ENSIAS", genie: "Génie Digital (GD)", domaine: "Informatique", rangs: { MP: 872, PSI: 100, TSI: 236 } },
 
-        // INPT
-        { ecole: "INPT", genie: "DATA Science", domaine: "Informatique", rangs: { MP: 301, PSI: 82, TSI: 147 } },
-        { ecole: "INPT", genie: "CLOUD Computing", domaine: "Informatique", rangs: { MP: 500, PSI: 117, TSI: 144 } },
-        { ecole: "INPT", genie: "ASEDS", domaine: "Telecom", rangs: { MP: 284, PSI: 95, TSI: 72 } }
+        // --- INPT ---
+        { ecole: "INPT", genie: "Data Science", domaine: "Informatique", rangs: { MP: 301, PSI: 82, TSI: 147 } },
+        { ecole: "INPT", genie: "Cloud Computing", domaine: "Informatique", rangs: { MP: 500, PSI: 117, TSI: 144 } },
+        { ecole: "INPT", genie: "ASEDS (Systèmes Embarqués)", domaine: "Telecom", rangs: { MP: 284, PSI: 95, TSI: 72 } },
+
+        // --- EHTP ---
+        { ecole: "EHTP", genie: "Génie Civil", domaine: "Civil", rangs: { MP: 1514, PSI: 156, TSI: 107 } },
+        { ecole: "EHTP", genie: "Génie Électrique & Énergie", domaine: "Electrique", rangs: { MP: 1594, PSI: 117, TSI: 151 } },
+        { ecole: "EHTP", genie: "Génie Transport & Logistique", domaine: "Industriel", rangs: { MP: 1686, PSI: 189, TSI: 160 } },
+        { ecole: "EHTP", genie: "Génie Informatique (Computer Science)", domaine: "Informatique", rangs: { MP: 1319, PSI: 157, TSI: 162 } },
+        { ecole: "EHTP", genie: "Génie Géomatique & SI", domaine: "Informatique", rangs: { MP: 1830, PSI: 246, TSI: 343 } },
+        { ecole: "EHTP", genie: "Génie des Matériaux", domaine: "Mecanique", rangs: { MP: 1764, PSI: 381, TSI: 320 } },
+        { ecole: "EHTP", genie: "Météorologie & Développement Durable", domaine: "Processus", rangs: { MP: 1885, PSI: 248, TSI: 217 } },
+        { ecole: "EHTP", genie: "Génie Hydraulique & Ressources en Eau", domaine: "Civil", rangs: { MP: 1891, PSI: 78, TSI: 275 } },
+
+        // --- AIAC ---
+        { ecole: "AIAC", genie: "Génie Informatique (GI)", domaine: "Informatique", rangs: { MP: 1668, PSI: 320, TSI: 382 } },
+        { ecole: "AIAC", genie: "Génie Industriel & Productique (GIP)", domaine: "Industriel", rangs: { MP: 1958, PSI: 359, TSI: 273 } },
+        { ecole: "AIAC", genie: "Génie Électrique & Télécoms (GEET)", domaine: "Electrique", rangs: { MP: 1888, PSI: 382, TSI: 292 } },
+        { ecole: "AIAC", genie: "Génie Navigation Aérienne (ICNA)", domaine: "Telecom", rangs: { MP: 1948, PSI: 387, TSI: 374 } },
+        { ecole: "AIAC", genie: "Génie Sécurité Aviation Civile (IESCA)", domaine: "Industriel", rangs: { MP: 1976, PSI: 375, TSI: 365 } }
     ];
 
-    // ALGORITHME DE CALCUL DES SIMULATIONS
+    // ALGORITHME DE CALCUL DES PROBABILITÉS
     function calculerChances() {
         const filiere = document.getElementById('filiere').value;
         const classement = parseInt(document.getElementById('classement').value);
-        
         const checkboxes = document.querySelectorAll('.domaine-cb:checked');
         const domainesSelectionnes = Array.from(checkboxes).map(cb => cb.value);
-
         const resultatsDiv = document.getElementById('liste-ecoles');
 
-        if (isNaN(classement)) {
-            alert("Veuillez entrer un classement valide !");
+        if (isNaN(classement) || classement < 1) {
+            alert("Veuillez saisir un classement valide !");
             return;
         }
 
         if (domainesSelectionnes.length === 0) {
-            alert("Veuillez cocher au moins un domaine d'intérêt !");
+            alert("Veuillez sélectionner au moins un domaine.");
             return;
         }
 
-        resultatsDiv.innerHTML = "";
-        let auMoinsUnResultat = false;
+        // Incrémente le compteur de simulations calculées
+        incrémenterCompteur(API_SIMUS_URL, 'simus');
+
+        let resultats = [];
 
         baseDonnees.forEach(item => {
             if (domainesSelectionnes.includes(item.domaine)) {
                 const maxRang = item.rangs[filiere];
 
-                if (maxRang && classement <= (maxRang + 20)) {
-                    auMoinsUnResultat = true;
-                    
-                    let badge = (classement <= maxRang) 
-                        ? `<span class="badge-forte">Probabilité Forte</span>`
-                        : `<span class="badge-moyenne">Liste d'attente probable</span>`;
+                if (maxRang) {
+                    let proba = 0;
+                    let ratio = classement / maxRang;
 
-                    resultatsDiv.innerHTML += `
-                        <div class="ecole-card">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <strong style="font-size: 16px; color: #2d3748;">${item.ecole} - ${item.genie}</strong>
-                                ${badge}
-                            </div>
-                            <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a5568;">
-                                Filière : <b>${filiere}</b> | Rang max historique : <b>${maxRang}</b>
-                            </p>
-                        </div>
-                    `;
+                    if (ratio <= 0.8) {
+                        proba = Math.min(99, Math.round(100 - (ratio * 15)));
+                    } else if (ratio <= 1.0) {
+                        proba = Math.round(85 - ((ratio - 0.8) * 100));
+                    } else if (ratio <= 1.2) {
+                        proba = Math.round(65 - ((ratio - 1.0) * 150));
+                    } else {
+                        proba = Math.max(5, Math.round(35 - ((ratio - 1.2) * 50)));
+                    }
+
+                    resultats.push({
+                        ecole: item.ecole,
+                        genie: item.genie,
+                        maxRang: maxRang,
+                        proba: proba
+                    });
                 }
             }
         });
 
-        if (!auMoinsUnResultat) {
-            resultatsDiv.innerHTML = "<p style='color: #e53e3e; font-weight: bold;'>Aucune école ne correspond exactement à ce classement pour ces domaines.</p>";
+        resultats.sort((a, b) => b.proba - a.proba);
+        resultatsDiv.innerHTML = "";
+
+        if (resultats.length === 0) {
+            resultatsDiv.innerHTML = "<p style='color: #e53e3e;'>Aucune donnée disponible pour ces critères.</p>";
+        } else {
+            resultats.forEach(res => {
+                let badgeClass = "";
+                let badgeText = "";
+                let colorBar = "";
+
+                if (res.proba >= 85) {
+                    badgeClass = "badge-tres-forte";
+                    badgeText = "Très forte chance";
+                    colorBar = "#38a169";
+                } else if (res.proba >= 65) {
+                    badgeClass = "badge-forte";
+                    badgeText = "Forte chance";
+                    colorBar = "#3182ce";
+                } else if (res.proba >= 35) {
+                    badgeClass = "badge-moyenne";
+                    badgeText = "Liste d'attente probable";
+                    colorBar = "#dd6b20";
+                } else {
+                    badgeClass = "badge-faible";
+                    badgeText = "Faible probabilité";
+                    colorBar = "#e53e3e";
+                }
+
+                resultatsDiv.innerHTML += `
+                    <div class="ecole-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong style="font-size: 16px; color: #2d3748;">${res.ecole} — ${res.genie}</strong>
+                            <span class="badge ${badgeClass}">${badgeText} (${res.proba}%)</span>
+                        </div>
+                        <p style="margin: 8px 0 0 0; font-size: 13px; color: #718096;">
+                            Dernier rang admis historique (${filiere}) : <b>${res.maxRang}</b>
+                        </p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: ${res.proba}%; background-color: ${colorBar};"></div>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
         document.getElementById('resultat-box').style.display = 'block';
-    }
-
-    // GESTION DU FICHIER ET CONTRIBUTION
-    function afficherNomFichier(input) {
-        const label = document.getElementById('file-label');
-        if (input.files && input.files[0]) {
-            label.innerHTML = "<b>Fichier sélectionné :</b> " + input.files[0].name;
-        }
-    }
-
-    function envoyerContribution() {
-        const input = document.getElementById('file-input');
-        if(input.files.length > 0 || document.querySelector('textarea').value.trim() !== "") {
-            alert("Merci ! Votre remarque et votre fichier ont été enregistrés.");
-        } else {
-            alert("Veuillez ajouter une remarque ou sélectionner un fichier avant d'envoyer.");
-        }
     }
 </script>
 
