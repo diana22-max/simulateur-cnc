@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateforme d'Orientation CNC</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        h1 {
+            text-align: center;
+            color: #1a365d;
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+        }
+        .section {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            font-size: 18px;
+            color: #2b6cb0;
+            margin-top: 0;
+            border-bottom: 2px solid #3182ce;
+            padding-bottom: 6px;
+            display: inline-block;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            margin-top: 15px;
+        }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .checkbox-group label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            margin-top: 0;
+            background: #ffffff;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .checkbox-group input {
+            margin-right: 10px;
+        }
+        .file-upload-box {
+            border: 2px dashed #cbd5e0;
+            padding: 15px;
+            text-align: center;
+            background: #ffffff;
+            border-radius: 6px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .file-upload-box:hover {
+            border-color: #3182ce;
+            background-color: #ebf8ff;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #2b6cb0;
+        }
+        .btn-secondary {
+            background-color: #718096;
+            margin-top: 10px;
+        }
+        .btn-secondary:hover {
+            background-color: #4a5568;
+        }
+        #resultat-box {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f0fff4;
+            border: 1px solid #c6f6d5;
+            border-radius: 8px;
+        }
+        .ecole-card {
+            background: white;
+            padding: 15px;
+            margin-top: 12px;
+            border-radius: 6px;
+            border-left: 5px solid #3182ce;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .badge-forte {
+            background-color: #c6f6d5;
+            color: #22543d;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .badge-moyenne {
+            background-color: #feebc8;
+            color: #744210;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        /* Style pour masquer/afficher les pages */
+        .page {
+            display: none;
+        }
+        .page-active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ========================================== -->
+    <!-- PAGE 1 : ACCUEIL / CONNEXION               -->
+    <!-- ========================================== -->
+    <div id="page-accueil" class="page page-active">
+        <h1> Bienvenue sur le Simulateur CNC</h1>
+        <p class="subtitle">Estimez vos chances d'intégration selon vos classements et vos domaines préférés.</p>
+
+        <div class="section" style="background-color: #ebf8ff; border-color: #bee3f8;">
+            <h2>Espace Identification</h2>
+            <p style="font-size: 14px; color: #2b6cb0; margin-top: 0;">Connectez-vous pour accéder au simulateur d'affectations :</p>
+            
+            <label for="nom">Nom complet :</label>
+            <input type="text" id="nom" >
+
+            <div class="grid-2">
+                <div>
+                    <label for="email">Adresse Email :</label>
+                    <input type="email" id="email" placeholder="etudiant@gmail.com">
+                </div>
+                <div>
+                    <label for="password">Mot de passe :</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+            </div>
+
+            <button onclick="entrerDansLeSimulateur()" style="margin-top: 25px;">Accéder au Simulateur d'Affectation ➔</button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PAGE 2 : SIMULATION DE L'AFFECTATION       -->
+    <!-- ========================================== -->
+    <div id="page-simulation" class="page">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 style="margin: 0; font-size: 22px;" id="message-bienvenue"> Espace Simulation</h1>
+            <button onclick="retourAccueil()" style="width: auto; padding: 8px 15px; font-size: 13px;" class="btn-secondary">← Déconnexion</button>
+        </div>
+
+        <!-- 1. PROFIL DU CANIDAT -->
+        <div class="section">
+            <h2>1. Choix du Concours</h2>
+            
+            <label for="filiere">Filière d'origine :</label>
+            <select id="filiere">
+                <option value="TSI">TSI (Technologie et Sciences Industrielles)</option>
+                <option value="MP">MP (Mathématiques et Physique)</option>
+                <option value="PSI">PSI (Physique et Sciences de l'Ingénieur)</option>
+            </select>
+
+            <label for="classement">Votre classement CNC :</label>
+            <input type="number" id="classement" placeholder="Ex: 120" min="1">
+        </div>
+
+        <!-- 2. CHOIX DES DOMAINES -->
+        <div class="section">
+            <h2>2. Domaines d'intérêt (Sélection multiple)</h2>
+            <p style="font-size: 14px; color: #666; margin-top: 0;">Cochez un ou plusieurs domaines souhaités :</p>
+            <div class="checkbox-group">
+                <label><input type="checkbox" class="domaine-cb" value="Informatique"> Génie Informatique / Data / IA</label>
+                <label><input type="checkbox" class="domaine-cb" value="Electrique"> Génie Électrique</label>
+                <label><input type="checkbox" class="domaine-cb" value="Mecanique"> Génie Mécanique</label>
+                <label><input type="checkbox" class="domaine-cb" value="Industriel"> Génie Industriel</label>
+                <label><input type="checkbox" class="domaine-cb" value="Civil"> Génie Civil</label>
+                <label><input type="checkbox" class="domaine-cb" value="Telecom"> Réseaux & Télécoms</label>
+                <label><input type="checkbox" class="domaine-cb" value="Processus"> Génie des Procédés / Minéral</label>
+            </div>
+        </div>
+
+        <!-- BOUTON DE SIMULATION -->
+        <button onclick="calculerChances()">Lancer la simulation des affectations</button>
+
+        <!-- 3. RÉSULTATS -->
+        <div id="resultat-box">
+            <h2 style="color: #276749; margin-top: 0;">Écoles & Spécialités Eligibles</h2>
+            <div id="liste-ecoles"></div>
+        </div>
+
+        <!-- 4. CONTRIBUTIONS / FICHIERS -->
+        <div class="section" style="margin-top: 25px;">
+            <h2>4. Contribution & Fichiers (Crowdsourcing)</h2>
+            <p style="font-size: 14px; color: #666; margin-top: 0;">Partagez vos informations ou captures d'écran d'admissions :</p>
+            
+            <textarea rows="3" placeholder="Ex: Voici le tableau des affectations ENSIAS 2025..."></textarea>
+            
+            <label>Ajouter un document / image :</label>
+            <div class="file-upload-box" onclick="document.getElementById('file-input').click();">
+                📁 <span id="file-label">Cliquez ici pour choisir un fichier ou une image</span>
+                <input type="file" id="file-input" style="display: none;" accept="image/*,.pdf,.xlsx,.csv" onchange="afficherNomFichier(this)">
+            </div>
+
+            <button onclick="envoyerContribution()" class="btn-secondary">Envoyer l'observation</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // NAVIGATION ENTRE LES PAGES
+    function entrerDansLeSimulateur() {
+        const nom = document.getElementById('nom').value.trim();
+        const email = document.getElementById('email').value.trim();
+
+        if (nom === "" || email === "") {
+            alert("Veuillez remplir votre nom et votre adresse email pour continuer.");
+            return;
+        }
+
+        // Personnaliser le titre de bienvenue
+        document.getElementById('message-bienvenue').innerText = "🎯Espace Simulation de " + nom;
+
+        // Basculer la visibilité des pages
+        document.getElementById('page-accueil').classList.remove('page-active');
+        document.getElementById('page-simulation').classList.add('page-active');
+    }
+
+    function retourAccueil() {
+        document.getElementById('page-simulation').classList.remove('page-active');
+        document.getElementById('page-accueil').classList.add('page-active');
+    }
+
+    // BASE DE DONNÉES HISTORIQUES
+    const baseDonnees = [
+        // EMI
+        { ecole: "EMI", genie: "Génie Informatique", domaine: "Informatique", rangs: { MP: 833, PSI: 146, TSI: 111 } },
+        { ecole: "EMI", genie: "Génie Industriel", domaine: "Industriel", rangs: { MP: 1014, PSI: 38, TSI: 61 } },
+        { ecole: "EMI", genie: "Génie Mécanique", domaine: "Mecanique", rangs: { MP: 1330, PSI: 171, TSI: 122 } },
+        { ecole: "EMI", genie: "Génie Électrique", domaine: "Electrique", rangs: { MP: 1513, PSI: 188, TSI: 64 } },
+        { ecole: "EMI", genie: "Génie Civil", domaine: "Civil", rangs: { MP: 1441, PSI: 145, TSI: 160 } },
+        { ecole: "EMI", genie: "Génie Réseaux & Télécoms", domaine: "Telecom", rangs: { MP: 1253, PSI: 206, TSI: 199 } },
+        { ecole: "EMI", genie: "Génie des Procédés", domaine: "Processus", rangs: { MP: 1596, PSI: 292, TSI: 251 } },
+        
+        // ENSIAS
+        { ecole: "ENSIAS", genie: "Génie Logiciel (GL)", domaine: "Informatique", rangs: { MP: 981, PSI: 102, TSI: 318 } },
+        { ecole: "ENSIAS", genie: "2IA (Intelligence Artificielle)", domaine: "Informatique", rangs: { MP: 809, PSI: 34, TSI: 357 } },
+        { ecole: "ENSIAS", genie: "D2S (Data Science)", domaine: "Informatique", rangs: { MP: 1101, PSI: 163, TSI: 337 } },
+        { ecole: "ENSIAS", genie: "Génie Digital (GD)", domaine: "Informatique", rangs: { MP: 872, PSI: 100, TSI: 236 } },
+
+        // INPT
+        { ecole: "INPT", genie: "DATA Science", domaine: "Informatique", rangs: { MP: 301, PSI: 82, TSI: 147 } },
+        { ecole: "INPT", genie: "CLOUD Computing", domaine: "Informatique", rangs: { MP: 500, PSI: 117, TSI: 144 } },
+        { ecole: "INPT", genie: "ASEDS", domaine: "Telecom", rangs: { MP: 284, PSI: 95, TSI: 72 } }
+    ];
+
+    // ALGORITHME DE CALCUL DES SIMULATIONS
+    function calculerChances() {
+        const filiere = document.getElementById('filiere').value;
+        const classement = parseInt(document.getElementById('classement').value);
+        
+        const checkboxes = document.querySelectorAll('.domaine-cb:checked');
+        const domainesSelectionnes = Array.from(checkboxes).map(cb => cb.value);
+
+        const resultatsDiv = document.getElementById('liste-ecoles');
+
+        if (isNaN(classement)) {
+            alert("Veuillez entrer un classement valide !");
+            return;
+        }
+
+        if (domainesSelectionnes.length === 0) {
+            alert("Veuillez cocher au moins un domaine d'intérêt !");
+            return;
+        }
+
+        resultatsDiv.innerHTML = "";
+        let auMoinsUnResultat = false;
+
+        baseDonnees.forEach(item => {
+            if (domainesSelectionnes.includes(item.domaine)) {
+                const maxRang = item.rangs[filiere];
+
+                if (maxRang && classement <= (maxRang + 20)) {
+                    auMoinsUnResultat = true;
+                    
+                    let badge = (classement <= maxRang) 
+                        ? `<span class="badge-forte">Probabilité Forte</span>`
+                        : `<span class="badge-moyenne">Liste d'attente probable</span>`;
+
+                    resultatsDiv.innerHTML += `
+                        <div class="ecole-card">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong style="font-size: 16px; color: #2d3748;">${item.ecole} - ${item.genie}</strong>
+                                ${badge}
+                            </div>
+                            <p style="margin: 8px 0 0 0; font-size: 14px; color: #4a5568;">
+                                Filière : <b>${filiere}</b> | Rang max historique : <b>${maxRang}</b>
+                            </p>
+                        </div>
+                    `;
+                }
+            }
+        });
+
+        if (!auMoinsUnResultat) {
+            resultatsDiv.innerHTML = "<p style='color: #e53e3e; font-weight: bold;'>Aucune école ne correspond exactement à ce classement pour ces domaines.</p>";
+        }
+
+        document.getElementById('resultat-box').style.display = 'block';
+    }
+
+    // GESTION DU FICHIER ET CONTRIBUTION
+    function afficherNomFichier(input) {
+        const label = document.getElementById('file-label');
+        if (input.files && input.files[0]) {
+            label.innerHTML = "<b>Fichier sélectionné :</b> " + input.files[0].name;
+        }
+    }
+
+    function envoyerContribution() {
+        const input = document.getElementById('file-input');
+        if(input.files.length > 0 || document.querySelector('textarea').value.trim() !== "") {
+            alert("Merci ! Votre remarque et votre fichier ont été enregistrés.");
+        } else {
+            alert("Veuillez ajouter une remarque ou sélectionner un fichier avant d'envoyer.");
+        }
+    }
+</script>
+
+</body>
+</html>
